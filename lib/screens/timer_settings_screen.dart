@@ -1,0 +1,416 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/workout.dart';
+import '../models/timer_type.dart';
+import '../providers/workout_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/neumorphic_container.dart';
+import '../widgets/time_picker_modal.dart';
+import '../widgets/number_picker_modal.dart';
+
+class TimerSettingsScreen extends StatefulWidget {
+  final TimerType timerType;
+  final Workout workout;
+
+  const TimerSettingsScreen({
+    super.key,
+    required this.timerType,
+    required this.workout,
+  });
+
+  @override
+  State<TimerSettingsScreen> createState() => _TimerSettingsScreenState();
+}
+
+class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
+  late TextEditingController _nameController;
+  late Workout _workout;
+
+  @override
+  void initState() {
+    super.initState();
+    _workout = widget.workout;
+    _nameController = TextEditingController(text: _workout.name);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _updateWorkout(Workout Function(Workout) update) {
+    setState(() {
+      _workout = update(_workout);
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    if (m > 0 && s > 0) {
+      return '${m}m ${s}s';
+    } else if (m > 0) {
+      return '${m}m';
+    }
+    return '${s}s';
+  }
+
+  Future<void> _openTimePicker(String title, int currentValue, ValueChanged<int> onChanged) async {
+    final result = await TimePickerModal.show(
+      context: context,
+      title: title,
+      initialSeconds: currentValue,
+    );
+    if (result != null) {
+      onChanged(result);
+    }
+  }
+
+  Future<void> _openNumberPicker(String title, int currentValue, ValueChanged<int> onChanged) async {
+    final result = await NumberPickerModal.show(
+      context: context,
+      title: title,
+      initialValue: currentValue,
+      minValue: 1,
+      maxValue: 100,
+    );
+    if (result != null) {
+      onChanged(result);
+    }
+  }
+
+  void _goBack() {
+    // Return the updated workout to the previous screen
+    Navigator.of(context).pop(_workout.copyWith(name: _nameController.text.trim()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('${widget.timerType.displayName} Settings'),
+        leading: NeumorphicButton(
+          onPressed: _goBack,
+          size: 40,
+          child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+        ),
+        leadingWidth: 56,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Name input
+          NeumorphicContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            isPressed: true,
+            child: TextField(
+              controller: _nameController,
+              style: const TextStyle(color: AppTheme.textPrimary),
+              decoration: const InputDecoration(
+                labelText: 'Timer Name',
+                labelStyle: TextStyle(color: AppTheme.textSecondary),
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                _updateWorkout((w) => w.copyWith(name: value));
+              },
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Settings based on timer type
+          ..._buildSettingsForType(),
+          
+          const SizedBox(height: 24),
+          
+          // Summary
+          _buildSummary(),
+          
+          const SizedBox(height: 24),
+          
+          // Save button
+          NeumorphicButton(
+            onPressed: _save,
+            size: 56,
+            isCircle: false,
+            glowColor: AppTheme.colorWork,
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.save, color: AppTheme.colorWork),
+                SizedBox(width: 8),
+                Text(
+                  'Save Timer',
+                  style: TextStyle(
+                    color: AppTheme.colorWork,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildSettingsForType() {
+    switch (widget.timerType) {
+      case TimerType.tabata:
+        return [
+          _buildTimeTile(
+            label: 'Prepare',
+            value: _workout.prepareSeconds,
+            onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
+          ),
+          _buildTimeTile(
+            label: 'Work',
+            value: _workout.workSeconds,
+            color: AppTheme.colorWork,
+            onTap: () => _openTimePicker('Work', _workout.workSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(workSeconds: v))),
+          ),
+          _buildTimeTile(
+            label: 'Rest',
+            value: _workout.restSeconds,
+            color: AppTheme.colorRest,
+            onTap: () => _openTimePicker('Rest', _workout.restSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(restSeconds: v))),
+          ),
+          _buildNumberTile(
+            label: 'Rounds',
+            value: _workout.rounds,
+            onTap: () => _openNumberPicker('Rounds', _workout.rounds, 
+                (v) => _updateWorkout((w) => w.copyWith(rounds: v))),
+          ),
+          _buildNumberTile(
+            label: 'Cycles',
+            value: _workout.cycles,
+            onTap: () => _openNumberPicker('Cycles', _workout.cycles, 
+                (v) => _updateWorkout((w) => w.copyWith(cycles: v))),
+          ),
+          if (_workout.cycles > 1)
+            _buildTimeTile(
+              label: 'Rest Between Cycles',
+              value: _workout.restBetweenCycles,
+              onTap: () => _openTimePicker('Rest Between Cycles', _workout.restBetweenCycles, 
+                  (v) => _updateWorkout((w) => w.copyWith(restBetweenCycles: v))),
+            ),
+          _buildTimeTile(
+            label: 'Cooldown',
+            value: _workout.cooldownSeconds,
+            onTap: () => _openTimePicker('Cooldown', _workout.cooldownSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(cooldownSeconds: v))),
+          ),
+        ];
+        
+      case TimerType.rounds:
+        return [
+          _buildTimeTile(
+            label: 'Prepare',
+            value: _workout.prepareSeconds,
+            onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
+          ),
+          _buildTimeTile(
+            label: 'Work',
+            value: _workout.workSeconds,
+            color: AppTheme.colorWork,
+            onTap: () => _openTimePicker('Work', _workout.workSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(workSeconds: v))),
+          ),
+          _buildTimeTile(
+            label: 'Rest',
+            value: _workout.restSeconds,
+            color: AppTheme.colorRest,
+            onTap: () => _openTimePicker('Rest', _workout.restSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(restSeconds: v))),
+          ),
+          _buildNumberTile(
+            label: 'Rounds',
+            value: _workout.rounds,
+            onTap: () => _openNumberPicker('Rounds', _workout.rounds, 
+                (v) => _updateWorkout((w) => w.copyWith(rounds: v))),
+          ),
+          _buildTimeTile(
+            label: 'Cooldown',
+            value: _workout.cooldownSeconds,
+            onTap: () => _openTimePicker('Cooldown', _workout.cooldownSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(cooldownSeconds: v))),
+          ),
+        ];
+        
+      case TimerType.stopwatch:
+        return [
+          _buildTimeTile(
+            label: 'Prepare',
+            value: _workout.prepareSeconds,
+            onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
+                (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
+          ),
+        ];
+    }
+  }
+
+  Widget _buildTimeTile({
+    required String label,
+    required int value,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: NeumorphicContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        borderRadius: 16,
+        child: InkWell(
+          onTap: onTap,
+          child: Row(
+            children: [
+              if (color != null)
+                Container(
+                  width: 4,
+                  height: 24,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.4),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                ),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Text(
+                _formatTime(value),
+                style: const TextStyle(
+                  color: AppTheme.colorWork,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right,
+                color: AppTheme.textSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNumberTile({
+    required String label,
+    required int value,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: NeumorphicContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        borderRadius: 16,
+        child: InkWell(
+          onTap: onTap,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Text(
+                '$value',
+                style: const TextStyle(
+                  color: AppTheme.colorWork,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right,
+                color: AppTheme.textSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummary() {
+    if (widget.timerType == TimerType.stopwatch) {
+      return const SizedBox.shrink();
+    }
+    
+    return NeumorphicContainer(
+      padding: const EdgeInsets.all(20),
+      isPressed: true,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Total: ',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          Text(
+            _workout.formattedTotalDuration,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.colorWork,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _save() {
+    String name = _nameController.text.trim();
+    if (name.isEmpty) {
+      name = '${widget.timerType.displayName} Timer';
+    }
+    
+    final workout = _workout.copyWith(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      createdAt: DateTime.now(),
+    );
+    
+    context.read<WorkoutProvider>().saveWorkout(workout);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Timer saved!'),
+        backgroundColor: AppTheme.colorWork,
+      ),
+    );
+    
+    // Return the saved workout
+    Navigator.of(context).pop(workout);
+  }
+}
