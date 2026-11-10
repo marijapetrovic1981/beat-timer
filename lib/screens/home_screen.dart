@@ -97,8 +97,6 @@ class _TimersTab extends StatelessWidget {
         return Icons.update;
       case TimerType.rounds:
         return Icons.schedule;
-      case TimerType.stopwatch:
-        return Icons.alarm;
     }
   }
 
@@ -131,12 +129,6 @@ class _TimersTab extends StatelessWidget {
                     context,
                     type: TimerType.rounds,
                     workout: Workout.rounds(),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTimerCard(
-                    context,
-                    type: TimerType.stopwatch,
-                    workout: Workout.stopwatch(),
                   ),
                   
                   const SizedBox(height: 24),
@@ -190,9 +182,6 @@ class _TimersTab extends StatelessWidget {
         break;
       case TimerType.rounds:
         icon = Icons.schedule;
-        break;
-      case TimerType.stopwatch:
-        icon = Icons.alarm;
         break;
     }
 

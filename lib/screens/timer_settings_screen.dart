@@ -91,8 +91,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
   Widget build(BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
     final isExisting = !_workout.id.startsWith('default_');
-    final canSave = widget.timerType != TimerType.stopwatch && (isExisting || workoutProvider.canSaveMore);
-    final isStopwatch = widget.timerType == TimerType.stopwatch;
+    final canSave = isExisting || workoutProvider.canSaveMore;
     
     return Scaffold(
       appBar: AppBar(
@@ -123,53 +122,52 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Name input - only show for Tabata/Rounds when can save
-          if (!isStopwatch) ...[
-            if (canSave)
-              NeumorphicContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                isPressed: true,
-                child: TextField(
-                  controller: _nameController,
-                  style: const TextStyle(color: AppTheme.textPrimary),
-                  decoration: InputDecoration(
-                    labelText: 'Timer Name',
-                    labelStyle: const TextStyle(color: AppTheme.textSecondary),
-                    hintText: widget.timerType.displayName,
-                    hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
-                    border: InputBorder.none,
-                    suffixIcon: _nameController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, color: AppTheme.textSecondary, size: 20),
-                            onPressed: () {
-                              _nameController.clear();
-                              setState(() {});
-                            },
-                          )
-                        : null,
-                  ),
-                  onChanged: (value) {
-                    setState(() {});
-                    _updateWorkout((w) => w.copyWith(name: value));
-                  },
+          // Name input
+          if (canSave)
+            NeumorphicContainer(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              isPressed: true,
+              child: TextField(
+                controller: _nameController,
+                style: const TextStyle(color: AppTheme.textPrimary),
+                decoration: InputDecoration(
+                  labelText: 'Timer Name',
+                  labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                  hintText: widget.timerType.displayName,
+                  hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+                  border: InputBorder.none,
+                  suffixIcon: _nameController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: AppTheme.textSecondary, size: 20),
+                          onPressed: () {
+                            _nameController.clear();
+                            setState(() {});
+                          },
+                        )
+                      : null,
                 ),
-              )
-            else
-              NeumorphicContainer(
-                padding: const EdgeInsets.all(16),
-                isPressed: true,
-                child: const Center(
-                  child: Text(
-                    'Maximum timers saved',
-                    style: TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 16,
-                    ),
+                onChanged: (value) {
+                  setState(() {});
+                  _updateWorkout((w) => w.copyWith(name: value));
+                },
+              ),
+            )
+          else
+            NeumorphicContainer(
+              padding: const EdgeInsets.all(16),
+              isPressed: true,
+              child: const Center(
+                child: Text(
+                  'Maximum timers saved',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 16,
                   ),
                 ),
               ),
-            const SizedBox(height: 24),
-          ],
+            ),
+          
+          const SizedBox(height: 24),
           
           // Settings based on timer type
           ..._buildSettingsForType(),
@@ -179,33 +177,32 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           // Summary
           _buildSummary(),
           
-          // Save button - only for Tabata/Rounds
-          if (!isStopwatch) ...[
-            const SizedBox(height: 24),
-            NeumorphicButton(
-              onPressed: canSave ? _save : null,
-              size: 56,
-              isCircle: false,
-              glowColor: canSave ? AppTheme.colorWork : null,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.save,
+          const SizedBox(height: 24),
+          
+          // Save button
+          NeumorphicButton(
+            onPressed: canSave ? _save : null,
+            size: 56,
+            isCircle: false,
+            glowColor: canSave ? AppTheme.colorWork : null,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.save,
+                  color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Save Timer',
+                  style: TextStyle(
                     color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Save Timer',
-                    style: TextStyle(
-                      color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -303,17 +300,6 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
             color: AppTheme.colorRest,
             onTap: () => _openTimePicker('Cooldown', _workout.cooldownSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(cooldownSeconds: v))),
-          ),
-        ];
-        
-      case TimerType.stopwatch:
-        return [
-          _buildTimeTile(
-            label: 'Prepare',
-            value: _workout.prepareSeconds,
-            color: AppTheme.colorPrepare,
-            onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
-                (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
           ),
         ];
     }
@@ -440,10 +426,6 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
   }
 
   Widget _buildSummary() {
-    if (widget.timerType == TimerType.stopwatch) {
-      return const SizedBox.shrink();
-    }
-    
     return NeumorphicContainer(
       padding: const EdgeInsets.all(16),
       isPressed: true,

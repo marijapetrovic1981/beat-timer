@@ -1,7 +1,6 @@
 enum TimerType {
   tabata,
   rounds,
-  stopwatch,
 }
 
 extension TimerTypeExtension on TimerType {
@@ -11,8 +10,6 @@ extension TimerTypeExtension on TimerType {
         return 'Tabata';
       case TimerType.rounds:
         return 'Rounds';
-      case TimerType.stopwatch:
-        return 'Stopwatch';
     }
   }
 
@@ -22,8 +19,6 @@ extension TimerTypeExtension on TimerType {
         return 'Interval training with cycles';
       case TimerType.rounds:
         return 'Custom work/rest intervals';
-      case TimerType.stopwatch:
-        return 'Track time with laps';
     }
   }
 }

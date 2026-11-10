@@ -64,16 +64,6 @@ class Workout {
     );
   }
 
-  // Default Stopwatch preset
-  factory Workout.stopwatch() {
-    return const Workout(
-      id: 'stopwatch',
-      name: 'Stopwatch',
-      type: TimerType.stopwatch,
-      prepareSeconds: 3,
-    );
-  }
-
   int get totalDurationSeconds {
     switch (type) {
       case TimerType.tabata:
@@ -94,14 +84,10 @@ class Workout {
                (rounds * workSeconds) + 
                ((rounds - 1) * restSeconds) + 
                cooldownSeconds;
-               
-      case TimerType.stopwatch:
-        return 0; // Unlimited
     }
   }
 
   String get formattedTotalDuration {
-    if (type == TimerType.stopwatch) return '∞';
     final minutes = totalDurationSeconds ~/ 60;
     final seconds = totalDurationSeconds % 60;
     if (minutes > 0 && seconds > 0) {

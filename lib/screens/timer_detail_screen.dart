@@ -4,7 +4,6 @@ import '../models/timer_type.dart';
 import '../theme/app_theme.dart';
 import '../widgets/neumorphic_container.dart';
 import 'timer_screen.dart';
-import 'stopwatch_screen.dart';
 import 'timer_settings_screen.dart';
 
 class TimerDetailScreen extends StatefulWidget {
@@ -186,21 +185,6 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
           if (_workout.cooldownSeconds > 0)
             _buildDetailRow('Cooldown', '${_workout.cooldownSeconds}s', color: AppTheme.colorRest),
         ];
-        
-      case TimerType.stopwatch:
-        return [
-          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s', color: AppTheme.colorPrepare),
-          const Padding(
-            padding: EdgeInsets.only(top: 8),
-            child: Text(
-              'Tap to record laps',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ];
     }
   }
 
@@ -245,18 +229,10 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
   }
 
   void _startTimer(BuildContext context) {
-    if (widget.timerType == TimerType.stopwatch) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => StopwatchScreen(workout: _workout),
-        ),
-      );
-    } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => TimerScreen(workout: _workout, autoStart: true),
-        ),
-      );
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TimerScreen(workout: _workout, autoStart: true),
+      ),
+    );
   }
 }
