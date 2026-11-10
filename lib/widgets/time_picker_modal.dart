@@ -25,6 +25,9 @@ class TimePickerModal extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width,
+      ),
       builder: (context) => TimePickerModal(
         title: title,
         initialSeconds: initialSeconds,
@@ -62,6 +65,7 @@ class _TimePickerModalState extends State<TimePickerModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -198,7 +202,7 @@ class _TimePickerModalState extends State<TimePickerModal> {
           label,
           style: const TextStyle(
             color: AppTheme.textSecondary,
-            fontSize: 12,
+            fontSize: 18,
             letterSpacing: 1,
           ),
         ),

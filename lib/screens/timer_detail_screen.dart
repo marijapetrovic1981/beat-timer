@@ -53,20 +53,24 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_workout.name),
-        leading: NeumorphicButton(
-          onPressed: () => Navigator.of(context).pop(),
-          size: 40,
-          child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+        titleSpacing: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: NeumorphicButton(
+            onPressed: () => Navigator.of(context).pop(),
+            size: 40,
+            child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+          ),
         ),
         leadingWidth: 56,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 16),
             child: NeumorphicButton(
               onPressed: _openSettings,
               size: 40,
               child: const Icon(
-                Icons.tune,
+                Icons.manage_history,
                 color: AppTheme.textPrimary,
                 size: 20,
               ),
@@ -76,11 +80,35 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               // Timer info summary
               _buildInfoCard(),
+              
+              const SizedBox(height: 16),
+              
+              // Edit button
+              NeumorphicButton(
+                onPressed: _openSettings,
+                size: 48,
+                width: double.infinity,
+                isCircle: false,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.edit, color: AppTheme.textSecondary, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      'Edit Timer',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               
               const Spacer(),
               
@@ -88,12 +116,12 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
               Center(
                 child: NeumorphicButton(
                   onPressed: () => _startTimer(context),
-                  size: 120,
+                  size: 200,
                   glowColor: AppTheme.colorWork,
                   child: const Icon(
                     Icons.play_arrow_rounded,
                     color: AppTheme.colorWork,
-                    size: 60,
+                    size: 100,
                   ),
                 ),
               ),
@@ -108,7 +136,7 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
 
   Widget _buildInfoCard() {
     return NeumorphicContainer(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           // Total duration
@@ -138,37 +166,37 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
     switch (widget.timerType) {
       case TimerType.tabata:
         return [
-          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s'),
+          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s', color: AppTheme.colorPrepare),
           _buildDetailRow('Work', '${_workout.workSeconds}s', color: AppTheme.colorWork),
           _buildDetailRow('Rest', '${_workout.restSeconds}s', color: AppTheme.colorRest),
-          _buildDetailRow('Rounds', '${_workout.rounds}'),
-          _buildDetailRow('Cycles', '${_workout.cycles}'),
+          _buildDetailRow('Rounds', '${_workout.rounds}', color: AppTheme.colorRounds),
+          _buildDetailRow('Cycles', '${_workout.cycles}', color: AppTheme.colorRounds),
           if (_workout.cycles > 1)
-            _buildDetailRow('Rest between cycles', '${_workout.restBetweenCycles}s'),
+            _buildDetailRow('Rest between cycles', '${_workout.restBetweenCycles}s', color: AppTheme.colorRest),
           if (_workout.cooldownSeconds > 0)
-            _buildDetailRow('Cooldown', '${_workout.cooldownSeconds}s'),
+            _buildDetailRow('Cooldown', '${_workout.cooldownSeconds}s', color: AppTheme.colorRest),
         ];
         
       case TimerType.rounds:
         return [
-          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s'),
+          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s', color: AppTheme.colorPrepare),
           _buildDetailRow('Work', '${_workout.workSeconds}s', color: AppTheme.colorWork),
           _buildDetailRow('Rest', '${_workout.restSeconds}s', color: AppTheme.colorRest),
-          _buildDetailRow('Rounds', '${_workout.rounds}'),
+          _buildDetailRow('Rounds', '${_workout.rounds}', color: AppTheme.colorRounds),
           if (_workout.cooldownSeconds > 0)
-            _buildDetailRow('Cooldown', '${_workout.cooldownSeconds}s'),
+            _buildDetailRow('Cooldown', '${_workout.cooldownSeconds}s', color: AppTheme.colorRest),
         ];
         
       case TimerType.stopwatch:
         return [
-          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s'),
+          _buildDetailRow('Prepare', '${_workout.prepareSeconds}s', color: AppTheme.colorPrepare),
           const Padding(
             padding: EdgeInsets.only(top: 8),
             child: Text(
               'Tap to record laps',
               style: TextStyle(
                 color: AppTheme.textSecondary,
-                fontSize: 14,
+                fontSize: 16,
               ),
             ),
           ),
@@ -198,7 +226,7 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
                 label,
                 style: const TextStyle(
                   color: AppTheme.textSecondary,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ],
@@ -207,7 +235,7 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
             value,
             style: const TextStyle(
               color: AppTheme.textPrimary,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -226,7 +254,7 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
     } else {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => TimerScreen(workout: _workout),
+          builder: (context) => TimerScreen(workout: _workout, autoStart: true),
         ),
       );
     }

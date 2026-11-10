@@ -67,7 +67,7 @@ class Workout {
   // Default Stopwatch preset
   factory Workout.stopwatch() {
     return const Workout(
-      id: 'default_stopwatch',
+      id: 'stopwatch',
       name: 'Stopwatch',
       type: TimerType.stopwatch,
       prepareSeconds: 3,
@@ -79,7 +79,8 @@ class Workout {
       case TimerType.tabata:
         int total = prepareSeconds;
         for (int c = 0; c < cycles; c++) {
-          total += rounds * (workSeconds + restSeconds);
+          // Work for all rounds + rest for all rounds EXCEPT the last one in cycle
+          total += rounds * workSeconds + (rounds - 1) * restSeconds;
           if (c < cycles - 1) {
             total += restBetweenCycles;
           }
@@ -88,8 +89,10 @@ class Workout {
         return total;
         
       case TimerType.rounds:
+        // Work for all rounds + rest for all rounds EXCEPT the last one
         return prepareSeconds + 
-               (rounds * (workSeconds + restSeconds)) + 
+               (rounds * workSeconds) + 
+               ((rounds - 1) * restSeconds) + 
                cooldownSeconds;
                
       case TimerType.stopwatch:

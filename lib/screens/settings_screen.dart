@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/neumorphic_container.dart';
+import '../widgets/menu_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -20,9 +20,9 @@ class SettingsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate([
               // Sound settings
               const Text(
-                'Sound',
+                'SOUND',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.textSecondary,
                   letterSpacing: 1,
@@ -30,10 +30,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               
-              _SettingsTile(
+              MenuTile(
                 icon: Icons.volume_up_outlined,
                 title: 'Sound Effects',
                 subtitle: 'Play sounds during workout',
+                onTap: () {},
                 trailing: Switch(
                   value: true,
                   onChanged: (value) {
@@ -45,10 +46,11 @@ class SettingsScreen extends StatelessWidget {
               
               const SizedBox(height: 12),
               
-              _SettingsTile(
+              MenuTile(
                 icon: Icons.vibration_outlined,
                 title: 'Vibration',
                 subtitle: 'Vibrate on phase change',
+                onTap: () {},
                 trailing: Switch(
                   value: true,
                   onChanged: (value) {
@@ -62,9 +64,9 @@ class SettingsScreen extends StatelessWidget {
               
               // Display settings
               const Text(
-                'Display',
+                'DISPLAY',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.textSecondary,
                   letterSpacing: 1,
@@ -72,10 +74,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               
-              _SettingsTile(
+              MenuTile(
                 icon: Icons.stay_current_portrait_outlined,
                 title: 'Keep Screen On',
                 subtitle: 'Prevent screen from turning off',
+                onTap: () {},
                 trailing: Switch(
                   value: true,
                   onChanged: (value) {
@@ -85,85 +88,11 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               
-              const SizedBox(height: 32),
-              
-              // Info
-              Center(
-                child: Text(
-                  'More settings coming soon',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondary.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
+
             ]),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Widget trailing;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return NeumorphicContainer(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppTheme.colorWork.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              color: AppTheme.colorWork,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          trailing,
-        ],
-      ),
     );
   }
 }

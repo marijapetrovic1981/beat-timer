@@ -26,15 +26,4 @@ extension TimerTypeExtension on TimerType {
         return 'Track time with laps';
     }
   }
-
-  String get icon {
-    switch (this) {
-      case TimerType.tabata:
-        return '⚡';
-      case TimerType.rounds:
-        return '🔄';
-      case TimerType.stopwatch:
-        return '⏱️';
-    }
-  }
 }

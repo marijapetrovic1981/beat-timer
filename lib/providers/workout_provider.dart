@@ -4,9 +4,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/workout.dart';
 
 class WorkoutProvider extends ChangeNotifier {
+  static const int maxSavedTimers = 10;
+  
   List<Workout> _savedTimers = [];
 
   List<Workout> get savedTimers => _savedTimers;
+  
+  bool get canSaveMore => _savedTimers.length < maxSavedTimers;
+  
+  int get savedCount => _savedTimers.length;
 
   Future<void> loadWorkouts() async {
     final prefs = await SharedPreferences.getInstance();

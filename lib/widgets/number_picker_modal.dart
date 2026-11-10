@@ -31,6 +31,9 @@ class NumberPickerModal extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width,
+      ),
       builder: (context) => NumberPickerModal(
         title: title,
         initialValue: initialValue,
@@ -68,6 +71,7 @@ class _NumberPickerModalState extends State<NumberPickerModal> {
     final itemCount = widget.maxValue - widget.minValue + 1;
     
     return Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),

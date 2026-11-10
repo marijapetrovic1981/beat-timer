@@ -110,8 +110,9 @@ class NeumorphicContainer extends StatelessWidget {
 /// Neumorphic button with press animation
 class NeumorphicButton extends StatefulWidget {
   final Widget child;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final double size;
+  final double? width;
   final bool isCircle;
   final Color? glowColor;
 
@@ -120,6 +121,7 @@ class NeumorphicButton extends StatefulWidget {
     required this.child,
     required this.onPressed,
     this.size = 64,
+    this.width,
     this.isCircle = true,
     this.glowColor,
   });
@@ -131,14 +133,16 @@ class NeumorphicButton extends StatefulWidget {
 class _NeumorphicButtonState extends State<NeumorphicButton> {
   bool _isPressed = false;
 
+  bool get _isEnabled => widget.onPressed != null;
+
   @override
   Widget build(BuildContext context) {
     final decoration = widget.isCircle
         ? BoxDecoration(
             color: AppTheme.background,
             shape: BoxShape.circle,
-            boxShadow: _isPressed
-                ? [] // No shadow when pressed
+            boxShadow: _isPressed || !_isEnabled
+                ? [] // No shadow when pressed or disabled
                 : [
                     BoxShadow(
                       color: AppTheme.shadowDark,
@@ -167,7 +171,7 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
         : BoxDecoration(
             color: AppTheme.background,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: _isPressed
+            boxShadow: _isPressed || !_isEnabled
                 ? []
                 : [
                     BoxShadow(
@@ -190,21 +194,24 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
           );
 
     return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
+      onTapDown: _isEnabled ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp: _isEnabled ? (_) {
         setState(() => _isPressed = false);
-        widget.onPressed();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
+        widget.onPressed?.call();
+      } : null,
+      onTapCancel: _isEnabled ? () => setState(() => _isPressed = false) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        width: widget.size,
+        width: widget.width ?? widget.size,
         height: widget.size,
         decoration: decoration,
         transform: _isPressed
             ? Matrix4.translationValues(2, 2, 0)
             : Matrix4.identity(),
-        child: Center(child: widget.child),
+        child: Opacity(
+          opacity: _isEnabled ? 1.0 : 0.5,
+          child: Center(child: widget.child),
+        ),
       ),
     );
   }

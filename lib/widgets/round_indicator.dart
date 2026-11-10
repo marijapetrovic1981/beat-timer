@@ -47,7 +47,7 @@ class RoundIndicator extends StatelessWidget {
           label,
           style: const TextStyle(
             color: AppTheme.textSecondary,
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             letterSpacing: 1.5,
           ),

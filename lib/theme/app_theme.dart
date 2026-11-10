@@ -13,6 +13,9 @@ class AppTheme {
   // Status colors
   static const Color colorWork = Color(0xFF34D399);      // Emerald glow - contrast 7.8:1
   static const Color colorRest = Color(0xFF38BDF8);      // Cyan glow - contrast 7.3:1
+  static const Color colorHeart = Color(0xFFFF6B6B);     // Soft red for donate heart
+  static const Color colorPrepare = Color(0xFFFBBF24);   // Yellow - get ready
+  static const Color colorRounds = Color(0xFFA78BFA);    // Purple - rounds/cycles counter
   
   // Legacy aliases for compatibility
   static const Color surface = Color(0xFF1E293B);
@@ -211,7 +214,7 @@ class AppTheme {
           color: textPrimary,
         ),
         bodyMedium: TextStyle(
-          fontSize: 14,
+          fontSize: 16,
           color: textSecondary,
         ),
       ),

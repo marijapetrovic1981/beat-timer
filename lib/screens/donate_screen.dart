@@ -10,16 +10,20 @@ class DonateScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Support Beat Timer'),
-        leading: NeumorphicButton(
-          onPressed: () => Navigator.of(context).pop(),
-          size: 40,
-          child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+        titleSpacing: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: NeumorphicButton(
+            onPressed: () => Navigator.of(context).pop(),
+            size: 40,
+            child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+          ),
         ),
         leadingWidth: 56,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               const Spacer(),
@@ -70,13 +74,13 @@ class DonateScreen extends StatelessWidget {
               
               // Donate card
               NeumorphicContainer(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     const Text(
                       'If you enjoy the app and want to support its development, you can leave a donation.',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppTheme.textSecondary,
                         height: 1.5,
                       ),

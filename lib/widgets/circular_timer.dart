@@ -83,7 +83,7 @@ class CircularTimer extends StatelessWidget {
             painter: _GlowingRingPainter(
               progress: progress,
               color: color,
-              strokeWidth: 6,
+              strokeWidth: 12,
             ),
           ),
           // Timer display
@@ -94,7 +94,7 @@ class CircularTimer extends StatelessWidget {
                 state.phase.displayName.toUpperCase(),
                 style: TextStyle(
                   color: color,
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2,
                 ),
@@ -125,7 +125,7 @@ class CircularTimer extends StatelessWidget {
       case TimerPhase.cooldown:
         return AppTheme.colorRest;
       case TimerPhase.prepare:
-        return AppTheme.colorWork;
+        return AppTheme.colorPrepare;
       case TimerPhase.finished:
         return AppTheme.colorWork;
       case TimerPhase.idle:
@@ -162,7 +162,7 @@ class _GlowingRingPainter extends CustomPainter {
     // Glow effect
     final glowPaint = Paint()
       ..color = color.withValues(alpha: 0.3)
-      ..strokeWidth = strokeWidth + 8
+      ..strokeWidth = strokeWidth + 16
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);

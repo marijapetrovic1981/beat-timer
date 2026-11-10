@@ -30,7 +30,9 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
   void initState() {
     super.initState();
     _workout = widget.workout;
-    _nameController = TextEditingController(text: _workout.name);
+    // For new (default) timers, start with empty field - placeholder will show
+    final isDefault = _workout.id.startsWith('default_');
+    _nameController = TextEditingController(text: isDefault ? '' : _workout.name);
   }
 
   @override
@@ -87,38 +89,87 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final workoutProvider = context.watch<WorkoutProvider>();
+    final isExisting = !_workout.id.startsWith('default_');
+    final canSave = widget.timerType != TimerType.stopwatch && (isExisting || workoutProvider.canSaveMore);
+    final isStopwatch = widget.timerType == TimerType.stopwatch;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.timerType.displayName} Settings'),
-        leading: NeumorphicButton(
-          onPressed: _goBack,
-          size: 40,
-          child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+        titleSpacing: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: NeumorphicButton(
+            onPressed: _goBack,
+            size: 40,
+            child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary, size: 20),
+          ),
         ),
         leadingWidth: 56,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: NeumorphicButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              size: 40,
+              child: const Icon(Icons.home_outlined, color: AppTheme.textPrimary, size: 20),
+            ),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Name input
-          NeumorphicContainer(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            isPressed: true,
-            child: TextField(
-              controller: _nameController,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: const InputDecoration(
-                labelText: 'Timer Name',
-                labelStyle: TextStyle(color: AppTheme.textSecondary),
-                border: InputBorder.none,
+          // Name input - only show for Tabata/Rounds when can save
+          if (!isStopwatch) ...[
+            if (canSave)
+              NeumorphicContainer(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                isPressed: true,
+                child: TextField(
+                  controller: _nameController,
+                  style: const TextStyle(color: AppTheme.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Timer Name',
+                    labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                    hintText: widget.timerType.displayName,
+                    hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+                    border: InputBorder.none,
+                    suffixIcon: _nameController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, color: AppTheme.textSecondary, size: 20),
+                            onPressed: () {
+                              _nameController.clear();
+                              setState(() {});
+                            },
+                          )
+                        : null,
+                  ),
+                  onChanged: (value) {
+                    setState(() {});
+                    _updateWorkout((w) => w.copyWith(name: value));
+                  },
+                ),
+              )
+            else
+              NeumorphicContainer(
+                padding: const EdgeInsets.all(16),
+                isPressed: true,
+                child: const Center(
+                  child: Text(
+                    'Maximum timers saved',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ),
-              onChanged: (value) {
-                _updateWorkout((w) => w.copyWith(name: value));
-              },
-            ),
-          ),
-          
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
+          ],
           
           // Settings based on timer type
           ..._buildSettingsForType(),
@@ -128,29 +179,33 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           // Summary
           _buildSummary(),
           
-          const SizedBox(height: 24),
-          
-          // Save button
-          NeumorphicButton(
-            onPressed: _save,
-            size: 56,
-            isCircle: false,
-            glowColor: AppTheme.colorWork,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.save, color: AppTheme.colorWork),
-                SizedBox(width: 8),
-                Text(
-                  'Save Timer',
-                  style: TextStyle(
-                    color: AppTheme.colorWork,
-                    fontWeight: FontWeight.w600,
+          // Save button - only for Tabata/Rounds
+          if (!isStopwatch) ...[
+            const SizedBox(height: 24),
+            NeumorphicButton(
+              onPressed: canSave ? _save : null,
+              size: 56,
+              isCircle: false,
+              glowColor: canSave ? AppTheme.colorWork : null,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.save,
+                    color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    'Save Timer',
+                    style: TextStyle(
+                      color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -163,6 +218,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           _buildTimeTile(
             label: 'Prepare',
             value: _workout.prepareSeconds,
+            color: AppTheme.colorPrepare,
             onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
           ),
@@ -183,12 +239,14 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           _buildNumberTile(
             label: 'Rounds',
             value: _workout.rounds,
+            color: AppTheme.colorRounds,
             onTap: () => _openNumberPicker('Rounds', _workout.rounds, 
                 (v) => _updateWorkout((w) => w.copyWith(rounds: v))),
           ),
           _buildNumberTile(
             label: 'Cycles',
             value: _workout.cycles,
+            color: AppTheme.colorRounds,
             onTap: () => _openNumberPicker('Cycles', _workout.cycles, 
                 (v) => _updateWorkout((w) => w.copyWith(cycles: v))),
           ),
@@ -196,12 +254,14 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
             _buildTimeTile(
               label: 'Rest Between Cycles',
               value: _workout.restBetweenCycles,
+              color: AppTheme.colorRest,
               onTap: () => _openTimePicker('Rest Between Cycles', _workout.restBetweenCycles, 
                   (v) => _updateWorkout((w) => w.copyWith(restBetweenCycles: v))),
             ),
           _buildTimeTile(
             label: 'Cooldown',
             value: _workout.cooldownSeconds,
+            color: AppTheme.colorRest,
             onTap: () => _openTimePicker('Cooldown', _workout.cooldownSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(cooldownSeconds: v))),
           ),
@@ -212,6 +272,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           _buildTimeTile(
             label: 'Prepare',
             value: _workout.prepareSeconds,
+            color: AppTheme.colorPrepare,
             onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
           ),
@@ -232,12 +293,14 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           _buildNumberTile(
             label: 'Rounds',
             value: _workout.rounds,
+            color: AppTheme.colorRounds,
             onTap: () => _openNumberPicker('Rounds', _workout.rounds, 
                 (v) => _updateWorkout((w) => w.copyWith(rounds: v))),
           ),
           _buildTimeTile(
             label: 'Cooldown',
             value: _workout.cooldownSeconds,
+            color: AppTheme.colorRest,
             onTap: () => _openTimePicker('Cooldown', _workout.cooldownSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(cooldownSeconds: v))),
           ),
@@ -248,6 +311,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           _buildTimeTile(
             label: 'Prepare',
             value: _workout.prepareSeconds,
+            color: AppTheme.colorPrepare,
             onTap: () => _openTimePicker('Prepare', _workout.prepareSeconds, 
                 (v) => _updateWorkout((w) => w.copyWith(prepareSeconds: v))),
           ),
@@ -319,6 +383,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
     required String label,
     required int value,
     required VoidCallback onTap,
+    Color? color,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -329,6 +394,22 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           onTap: onTap,
           child: Row(
             children: [
+              if (color != null)
+                Container(
+                  width: 4,
+                  height: 24,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.4),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                ),
               Expanded(
                 child: Text(
                   label,
@@ -364,7 +445,7 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
     }
     
     return NeumorphicContainer(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       isPressed: true,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -392,20 +473,23 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
   void _save() {
     String name = _nameController.text.trim();
     if (name.isEmpty) {
-      name = '${widget.timerType.displayName} Timer';
+      name = widget.timerType.displayName;
     }
     
+    // Check if this is an existing saved timer (not a default one)
+    final isExisting = !_workout.id.startsWith('default_');
+    
     final workout = _workout.copyWith(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: isExisting ? _workout.id : DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
-      createdAt: DateTime.now(),
+      createdAt: isExisting ? _workout.createdAt : DateTime.now(),
     );
     
     context.read<WorkoutProvider>().saveWorkout(workout);
     
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Timer saved!'),
+      SnackBar(
+        content: Text(isExisting ? 'Timer updated!' : 'Timer saved!'),
         backgroundColor: AppTheme.colorWork,
       ),
     );

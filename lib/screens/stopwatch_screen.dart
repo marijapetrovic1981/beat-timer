@@ -134,19 +134,23 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.workout.name),
-        leading: NeumorphicButton(
-          onPressed: () {
-            _timer?.cancel();
-            Navigator.of(context).pop();
-          },
-          size: 40,
-          child: const Icon(Icons.close, color: AppTheme.textPrimary, size: 20),
+        titleSpacing: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: NeumorphicButton(
+            onPressed: () {
+              _timer?.cancel();
+              Navigator.of(context).pop();
+            },
+            size: 40,
+            child: const Icon(Icons.close, color: AppTheme.textPrimary, size: 20),
+          ),
         ),
         leadingWidth: 56,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
               const Spacer(),

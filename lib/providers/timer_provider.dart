@@ -126,16 +126,45 @@ class TimerProvider extends ChangeNotifier {
         break;
 
       case TimerPhase.work:
-        if (workout.restSeconds > 0) {
-          // Go to rest
+        // Check if this is the last round in current cycle
+        final isLastRoundInCycle = _state.currentRound >= workout.rounds;
+        // Check if this is the very last round overall
+        final isLastRoundOverall = isLastRoundInCycle && 
+            (workout.type != TimerType.tabata || _state.currentCycle >= workout.cycles);
+        
+        if (isLastRoundOverall) {
+          // Last round ever - skip rest, go to cooldown or finish
+          if (workout.cooldownSeconds > 0) {
+            _state = _state.copyWith(
+              phase: TimerPhase.cooldown,
+              secondsRemaining: workout.cooldownSeconds,
+            );
+            onPhaseChange?.call();
+          } else {
+            _finishWorkout();
+          }
+        } else if (isLastRoundInCycle && workout.type == TimerType.tabata) {
+          // Last round in cycle but more cycles to go - skip rest, go to cycle rest
+          _state = _state.copyWith(
+            phase: TimerPhase.restBetweenCycles,
+            secondsRemaining: workout.restBetweenCycles,
+          );
+          onPhaseChange?.call();
+        } else if (workout.restSeconds > 0) {
+          // Normal rest between rounds
           _state = _state.copyWith(
             phase: TimerPhase.rest,
             secondsRemaining: workout.restSeconds,
           );
           onPhaseChange?.call();
         } else {
-          // No rest, go to next round
-          _handleRoundComplete();
+          // No rest configured, go directly to next round
+          _state = _state.copyWith(
+            phase: TimerPhase.work,
+            secondsRemaining: workout.workSeconds,
+            currentRound: _state.currentRound + 1,
+          );
+          onPhaseChange?.call();
         }
         break;
 

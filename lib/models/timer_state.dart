@@ -20,7 +20,7 @@ extension TimerPhaseExtension on TimerPhase {
       case TimerPhase.rest:
         return 'Rest';
       case TimerPhase.restBetweenCycles:
-        return 'Cycle Break';
+        return 'Cycle Rest';
       case TimerPhase.cooldown:
         return 'Cool Down';
       case TimerPhase.finished:
