@@ -7,6 +7,31 @@
 .buildlog/
 .history
 
+# Secrets and keys - NEVER commit these
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.p8
+*.pem
+*.key
+*.mobileprovision
+**/android/key.properties
+**/ios/AuthKey_*.p8
+**/ios/*.mobileprovision
+
+# Firebase / Google Services
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+
+# IDE and editor
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
 
 
 # Flutter repo-specific
