@@ -30,13 +30,17 @@ class AboutScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 32),
             
-            // Logo placeholder in neumorphic box
+            // Logo
             Center(
               child: NeumorphicContainer(
-                padding: const EdgeInsets.all(24),
-                child: const Text(
-                  '⏱️',
-                  style: TextStyle(fontSize: 64),
+                borderRadius: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    'assets/images/beat-timer-logo-raw.png',
+                    width: 120,
+                    height: 120,
+                  ),
                 ),
               ),
             ),

@@ -103,7 +103,7 @@ class CircularTimer extends StatelessWidget {
               Text(
                 state.formattedTime,
                 style: TextStyle(
-                  fontFamily: 'Courier',
+                  fontFamily: 'Roboto',
                   fontSize: size * 0.18,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.textPrimary,

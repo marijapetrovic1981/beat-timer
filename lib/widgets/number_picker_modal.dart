@@ -139,7 +139,7 @@ class _NumberPickerModalState extends State<NumberPickerModal> {
                           child: Text(
                             value.toString(),
                             style: TextStyle(
-                              fontSize: isSelected ? 28 : 20,
+                              fontSize: isSelected ? 36 : 28,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               color: isSelected 
                                   ? AppTheme.textPrimary 

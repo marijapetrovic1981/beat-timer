@@ -114,6 +114,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: 'Roboto',
       scaffoldBackgroundColor: background,
       colorScheme: const ColorScheme.dark(
         primary: primary,
@@ -127,6 +128,7 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
+          fontFamily: 'Roboto',
           color: textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w600,

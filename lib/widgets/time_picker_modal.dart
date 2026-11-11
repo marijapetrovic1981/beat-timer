@@ -113,12 +113,12 @@ class _TimePickerModalState extends State<TimePickerModal> {
                   ),
                   
                   // Separator
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 32, left: 8, right: 8),
                     child: Text(
                       ':',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.textPrimary,
                       ),
@@ -238,7 +238,7 @@ class _TimePickerModalState extends State<TimePickerModal> {
                       child: Text(
                         index.toString().padLeft(2, '0'),
                         style: TextStyle(
-                          fontSize: isSelected ? 28 : 20,
+                          fontSize: isSelected ? 36 : 28,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           color: isSelected 
                               ? AppTheme.textPrimary 
