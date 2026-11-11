@@ -129,8 +129,10 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
               isPressed: true,
               child: TextField(
                 controller: _nameController,
+                maxLength: 30,
                 style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
+                  counterText: '', // Hide character counter
                   labelText: 'Timer Name',
                   labelStyle: const TextStyle(color: AppTheme.textSecondary),
                   hintText: widget.timerType.displayName,

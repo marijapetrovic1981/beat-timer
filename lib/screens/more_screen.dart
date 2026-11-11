@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/menu_tile.dart';
+import 'about_screen.dart';
+import 'contact_screen.dart';
 import 'donate_screen.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -73,11 +75,9 @@ class MoreScreen extends StatelessWidget {
                 title: 'Contact',
                 subtitle: 'Send feedback or report a bug',
                 onTap: () {
-                  // TODO: Implement - open email
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon!'),
-                      backgroundColor: AppTheme.colorWork,
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ContactScreen(),
                     ),
                   );
                 },
@@ -90,26 +90,10 @@ class MoreScreen extends StatelessWidget {
                 title: 'About',
                 subtitle: 'Version 1.0.0',
                 onTap: () {
-                  showAboutDialog(
-                    context: context,
-                    applicationName: 'Beat Timer',
-                    applicationVersion: '1.0.0',
-                    applicationIcon: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppTheme.colorWork.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text('⏱️', style: TextStyle(fontSize: 24)),
-                      ),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AboutScreen(),
                     ),
-                    children: [
-                      const Text(
-                        'A simple workout timer for Tabata, intervals, and more.',
-                      ),
-                    ],
                   );
                 },
               ),
