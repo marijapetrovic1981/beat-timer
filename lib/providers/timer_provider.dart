@@ -4,22 +4,24 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../models/timer_state.dart';
 import '../models/workout.dart';
 import '../models/timer_type.dart';
+import '../services/audio_service.dart';
 
 class TimerProvider extends ChangeNotifier {
   Timer? _timer;
   TimerState _state = const TimerState();
   Workout? _currentWorkout;
+  final AudioService _audioService = AudioService();
   
-  // Callbacks for sound/vibration
-  VoidCallback? onPhaseChange;
-  VoidCallback? onCountdown;
-  VoidCallback? onComplete;
+  // Track if countdown sound was played for prepare phase
+  bool _countdownPlayed = false;
 
   TimerState get state => _state;
   Workout? get currentWorkout => _currentWorkout;
+  AudioService get audioService => _audioService;
 
   void loadWorkout(Workout workout) {
     _currentWorkout = workout;
+    _countdownPlayed = false;
     _state = TimerState(
       phase: TimerPhase.idle,
       secondsRemaining: workout.prepareSeconds,
@@ -100,9 +102,11 @@ class TimerProvider extends ChangeNotifier {
         totalSecondsElapsed: _state.totalSecondsElapsed + 1,
       );
       
-      // Countdown beep for last 3 seconds
-      if (_state.secondsRemaining <= 3 && _state.secondsRemaining > 0) {
-        onCountdown?.call();
+      // Play countdown sound when 3 seconds left in any phase (except idle/finished)
+      if (_state.secondsRemaining == 3 && 
+          _state.phase != TimerPhase.idle && 
+          _state.phase != TimerPhase.finished) {
+        _audioService.playCountdown();
       }
       
       notifyListeners();
@@ -122,7 +126,7 @@ class TimerProvider extends ChangeNotifier {
           phase: TimerPhase.work,
           secondsRemaining: workout.workSeconds,
         );
-        onPhaseChange?.call();
+        _audioService.playWhistle();
         break;
 
       case TimerPhase.work:
@@ -139,7 +143,7 @@ class TimerProvider extends ChangeNotifier {
               phase: TimerPhase.cooldown,
               secondsRemaining: workout.cooldownSeconds,
             );
-            onPhaseChange?.call();
+            _audioService.playCooldown();
           } else {
             _finishWorkout();
           }
@@ -149,14 +153,14 @@ class TimerProvider extends ChangeNotifier {
             phase: TimerPhase.restBetweenCycles,
             secondsRemaining: workout.restBetweenCycles,
           );
-          onPhaseChange?.call();
+          _audioService.playRest();
         } else if (workout.restSeconds > 0) {
           // Normal rest between rounds
           _state = _state.copyWith(
             phase: TimerPhase.rest,
             secondsRemaining: workout.restSeconds,
           );
-          onPhaseChange?.call();
+          _audioService.playRest();
         } else {
           // No rest configured, go directly to next round
           _state = _state.copyWith(
@@ -164,7 +168,7 @@ class TimerProvider extends ChangeNotifier {
             secondsRemaining: workout.workSeconds,
             currentRound: _state.currentRound + 1,
           );
-          onPhaseChange?.call();
+          _audioService.playGo();
         }
         break;
 
@@ -180,7 +184,7 @@ class TimerProvider extends ChangeNotifier {
           currentRound: 1,
           currentCycle: _state.currentCycle + 1,
         );
-        onPhaseChange?.call();
+        _audioService.playGo();
         break;
 
       case TimerPhase.cooldown:
@@ -205,7 +209,7 @@ class TimerProvider extends ChangeNotifier {
         secondsRemaining: workout.workSeconds,
         currentRound: _state.currentRound + 1,
       );
-      onPhaseChange?.call();
+      _audioService.playGo();
     } else if (workout.type == TimerType.tabata && 
                _state.currentCycle < workout.cycles) {
       // Rest between cycles (Tabata only)
@@ -213,14 +217,14 @@ class TimerProvider extends ChangeNotifier {
         phase: TimerPhase.restBetweenCycles,
         secondsRemaining: workout.restBetweenCycles,
       );
-      onPhaseChange?.call();
+      _audioService.playRest();
     } else if (workout.cooldownSeconds > 0) {
       // Cooldown
       _state = _state.copyWith(
         phase: TimerPhase.cooldown,
         secondsRemaining: workout.cooldownSeconds,
       );
-      onPhaseChange?.call();
+      _audioService.playCooldown();
     } else {
       _finishWorkout();
     }
@@ -234,7 +238,7 @@ class TimerProvider extends ChangeNotifier {
       isRunning: false,
       secondsRemaining: 0,
     );
-    onComplete?.call();
+    _audioService.playWorkoutDone();
     notifyListeners();
   }
 

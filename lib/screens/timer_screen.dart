@@ -34,29 +34,12 @@ class _TimerScreenState extends State<TimerScreen> {
     _timerProvider = context.read<TimerProvider>();
     _timerProvider.loadWorkout(widget.workout);
     
-    // Set up callbacks
-    _timerProvider.onPhaseChange = _onPhaseChange;
-    _timerProvider.onCountdown = _onCountdown;
-    _timerProvider.onComplete = _onComplete;
-    
     // Auto start if requested
     if (widget.autoStart) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _timerProvider.start();
       });
     }
-  }
-
-  void _onPhaseChange() {
-    HapticFeedback.mediumImpact();
-  }
-
-  void _onCountdown() {
-    HapticFeedback.lightImpact();
-  }
-
-  void _onComplete() {
-    HapticFeedback.heavyImpact();
   }
 
   String _formatDuration(int seconds) {
