@@ -21,20 +21,21 @@ class MoreScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              MenuTile(
-                icon: Icons.favorite_outline,
-                title: 'Support the App',
-                subtitle: 'Leave a donation',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const DonateScreen(),
-                    ),
-                  );
-                },
-              ),
-              
-              const SizedBox(height: 12),
+              // TODO: Uncomment when donations are implemented
+              // MenuTile(
+              //   icon: Icons.favorite_outline,
+              //   title: 'Support the App',
+              //   subtitle: 'Leave a donation',
+              //   onTap: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) => const DonateScreen(),
+              //       ),
+              //     );
+              //   },
+              // ),
+              // 
+              // const SizedBox(height: 12),
               
               MenuTile(
                 icon: Icons.star_outline,

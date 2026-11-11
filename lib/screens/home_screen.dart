@@ -131,10 +131,11 @@ class _TimersTab extends StatelessWidget {
                     workout: Workout.rounds(),
                   ),
                   
-                  const SizedBox(height: 24),
-                  
-                  // Donate card
-                  _buildDonateCard(context),
+                  // TODO: Uncomment when donations are implemented
+                  // const SizedBox(height: 24),
+                  // 
+                  // // Donate card
+                  // _buildDonateCard(context),
                   
                   // Saved timers section
                   if (provider.savedTimers.isNotEmpty) ...[
