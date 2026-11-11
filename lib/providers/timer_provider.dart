@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../models/timer_state.dart';
 import '../models/workout.dart';
@@ -14,6 +15,14 @@ class TimerProvider extends ChangeNotifier {
   
   // Track if countdown sound was played for prepare phase
   bool _countdownPlayed = false;
+  
+  // Settings
+  bool _keepScreenOn = true;
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    _keepScreenOn = prefs.getBool('keep_screen_on') ?? true;
+  }
 
   TimerState get state => _state;
   Workout? get currentWorkout => _currentWorkout;
@@ -34,8 +43,12 @@ class TimerProvider extends ChangeNotifier {
   void start() {
     if (_currentWorkout == null) return;
     
-    // Keep screen on during workout
-    WakelockPlus.enable();
+    // Load settings and keep screen on during workout if enabled
+    _loadSettings().then((_) {
+      if (_keepScreenOn) {
+        WakelockPlus.enable();
+      }
+    });
     
     if (_state.phase == TimerPhase.idle) {
       _state = _state.copyWith(
@@ -126,7 +139,7 @@ class TimerProvider extends ChangeNotifier {
           phase: TimerPhase.work,
           secondsRemaining: workout.workSeconds,
         );
-        _audioService.playWhistle();
+        _audioService.playGo();
         break;
 
       case TimerPhase.work:

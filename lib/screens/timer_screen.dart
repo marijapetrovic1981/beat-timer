@@ -184,7 +184,7 @@ class _TimerScreenState extends State<TimerScreen> {
                   CircularTimer(
                     state: state,
                     totalSeconds: _getCurrentPhaseDuration(state),
-                    size: math.min(MediaQuery.of(context).size.width * 0.75, 350),
+                    size: math.min(MediaQuery.of(context).size.width * 0.75, 320),
                   ),
                   
                   const SizedBox(height: 24),
@@ -317,21 +317,21 @@ class _TimerScreenState extends State<TimerScreen> {
       return const SizedBox(height: 50);
     }
     
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          'NEXT',
+          'NEXT: ',
           style: TextStyle(
             fontSize: 18,
             color: AppTheme.textPrimary,
             letterSpacing: 1,
           ),
         ),
-        const SizedBox(height: 4),
         Text(
-          '${nextPhase['name']}: ${_formatDuration(nextPhase['duration'])}',
+          '${nextPhase['name']} ${_formatDuration(nextPhase['duration'])}',
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             color: nextPhase['color'],
           ),

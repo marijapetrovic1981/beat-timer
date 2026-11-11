@@ -115,12 +115,12 @@ class _TimerDetailScreenState extends State<TimerDetailScreen> {
               Center(
                 child: NeumorphicButton(
                   onPressed: () => _startTimer(context),
-                  size: 200,
+                  size: 140,
                   glowColor: AppTheme.colorWork,
                   child: const Icon(
                     Icons.play_arrow_rounded,
                     color: AppTheme.colorWork,
-                    size: 100,
+                    size: 70,
                   ),
                 ),
               ),

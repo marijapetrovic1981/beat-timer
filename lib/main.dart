@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/settings_provider.dart';
 import 'providers/timer_provider.dart';
 import 'providers/workout_provider.dart';
 import 'screens/home_screen.dart';
@@ -38,6 +39,7 @@ class BeatTimerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => TimerProvider()),
         ChangeNotifierProvider(create: (_) => WorkoutProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
       ],
       child: MaterialApp(
         title: 'Beat Timer',
