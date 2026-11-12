@@ -29,7 +29,7 @@ class Workout {
     this.workSeconds = 20,
     this.restSeconds = 10,
     this.rounds = 8,
-    this.cycles = 1,
+    this.cycles = 2,
     this.restBetweenCycles = 60,
     this.createdAt,
   });
@@ -44,7 +44,7 @@ class Workout {
       workSeconds: 20,
       restSeconds: 10,
       rounds: 8,
-      cycles: 1,
+      cycles: 2,
       restBetweenCycles: 60,
       cooldownSeconds: 0,
     );
