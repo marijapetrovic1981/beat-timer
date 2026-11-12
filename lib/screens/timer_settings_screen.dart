@@ -181,24 +181,50 @@ class _TimerSettingsScreenState extends State<TimerSettingsScreen> {
           
           const SizedBox(height: 24),
           
+          // Use Timer button (same as back - returns to timer detail without saving)
+          NeumorphicButton(
+            onPressed: _goBack,
+            size: 56,
+            isCircle: false,
+            glowColor: AppTheme.colorWork,
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.play_arrow_rounded,
+                  color: AppTheme.colorWork,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Use Timer',
+                  style: TextStyle(
+                    color: AppTheme.colorWork,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 12),
+          
           // Save button
           NeumorphicButton(
             onPressed: canSave ? _save : null,
             size: 56,
             isCircle: false,
-            glowColor: canSave ? AppTheme.colorWork : null,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.save,
-                  color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
+                  color: canSave ? AppTheme.textSecondary : AppTheme.textSecondary.withValues(alpha: 0.5),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'Save Timer',
                   style: TextStyle(
-                    color: canSave ? AppTheme.colorWork : AppTheme.textSecondary,
+                    color: canSave ? AppTheme.textSecondary : AppTheme.textSecondary.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

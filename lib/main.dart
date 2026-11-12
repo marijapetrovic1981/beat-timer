@@ -6,10 +6,14 @@ import 'providers/settings_provider.dart';
 import 'providers/timer_provider.dart';
 import 'providers/workout_provider.dart';
 import 'screens/home_screen.dart';
+import 'services/purchase_service.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize RevenueCat
+  await PurchaseService().init();
   
   // Set preferred orientations
   SystemChrome.setPreferredOrientations([

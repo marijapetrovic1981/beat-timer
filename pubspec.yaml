@@ -12,10 +12,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   audioplayers: ^6.1.0
-  vibration: ^2.0.0
+  vibration: ^3.2.1
   shared_preferences: ^2.3.3
-  flutter_local_notifications: ^18.0.1
-  wakelock_plus: ^1.2.8
+  flutter_local_notifications: ^23.0.1
+  wakelock_plus: ^1.8.2
+  purchases_flutter: ^11.0.1
 
 dev_dependencies:
   flutter_test:
