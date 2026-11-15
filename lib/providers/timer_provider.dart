@@ -13,9 +13,6 @@ class TimerProvider extends ChangeNotifier {
   Workout? _currentWorkout;
   final AudioService _audioService = AudioService();
   
-  // Track if countdown sound was played for prepare phase
-  bool _countdownPlayed = false;
-  
   // Settings
   bool _keepScreenOn = true;
 
@@ -30,7 +27,6 @@ class TimerProvider extends ChangeNotifier {
 
   void loadWorkout(Workout workout) {
     _currentWorkout = workout;
-    _countdownPlayed = false;
     _state = TimerState(
       phase: TimerPhase.idle,
       secondsRemaining: workout.prepareSeconds,

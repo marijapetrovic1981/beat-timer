@@ -31,7 +31,7 @@ class PurchaseService {
       await Purchases.configure(configuration);
       _isInitialized = true;
     } catch (e) {
-      print('Error initializing RevenueCat: $e');
+      debugPrint('Error initializing RevenueCat: $e');
       // Don't crash the app if RevenueCat fails to initialize
     }
   }
@@ -54,7 +54,7 @@ class PurchaseService {
       products.sort((a, b) => a.price.compareTo(b.price));
       return products;
     } catch (e) {
-      print('Error fetching products: $e');
+      debugPrint('Error fetching products: $e');
       return [];
     }
   }
@@ -63,10 +63,10 @@ class PurchaseService {
     if (kIsWeb || !_isInitialized) return false;
 
     try {
-      await Purchases.purchaseStoreProduct(product);
+      await Purchases.purchase(PurchaseParams.storeProduct(product));
       return true;
     } catch (e) {
-      print('Error purchasing: $e');
+      debugPrint('Error purchasing: $e');
       return false;
     }
   }
