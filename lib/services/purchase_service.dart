@@ -3,8 +3,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PurchaseService {
   static const String _appleApiKey = 'appl_nKFJnaelKCylSGArsUUwHOWPxBA';
-  // TODO: Add Google API key when Google Play is set up
-  // static const String _googleApiKey = 'goog_xxxxxxxxxxxxx';
+  static const String _googleApiKey = 'goog_PpbWvYrzFLhmrcpwXmjLMqlKaai';
 
   static final PurchaseService _instance = PurchaseService._internal();
   factory PurchaseService() => _instance;
@@ -23,9 +22,7 @@ class PurchaseService {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       configuration = PurchasesConfiguration(_appleApiKey);
     } else if (defaultTargetPlatform == TargetPlatform.android) {
-      // TODO: Uncomment when Google Play is set up
-      // configuration = PurchasesConfiguration(_googleApiKey);
-      return; // Skip initialization on Android for now
+      configuration = PurchasesConfiguration(_googleApiKey);
     } else {
       return; // Not supported on other platforms
     }
