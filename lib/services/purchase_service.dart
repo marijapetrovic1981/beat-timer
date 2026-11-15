@@ -16,19 +16,24 @@ class PurchaseService {
     if (kIsWeb) return;
     if (_isInitialized) return;
 
-    await Purchases.setLogLevel(LogLevel.debug);
+    try {
+      await Purchases.setLogLevel(LogLevel.debug);
 
-    PurchasesConfiguration configuration;
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      configuration = PurchasesConfiguration(_appleApiKey);
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
-      configuration = PurchasesConfiguration(_googleApiKey);
-    } else {
-      return; // Not supported on other platforms
+      PurchasesConfiguration configuration;
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        configuration = PurchasesConfiguration(_appleApiKey);
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        configuration = PurchasesConfiguration(_googleApiKey);
+      } else {
+        return; // Not supported on other platforms
+      }
+
+      await Purchases.configure(configuration);
+      _isInitialized = true;
+    } catch (e) {
+      print('Error initializing RevenueCat: $e');
+      // Don't crash the app if RevenueCat fails to initialize
     }
-
-    await Purchases.configure(configuration);
-    _isInitialized = true;
   }
 
   Future<List<StoreProduct>> getProducts() async {
